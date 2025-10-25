@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uber Data Analysis Dashboard - Pranav Raskar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #E0E0E0;
+            line-height: 1.6;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(255, 193, 7, 0.2);
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: block;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #FFC107;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar nav li {
+            margin: 0;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 2rem;
+            color: #E0E0E0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar nav a:hover {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: #FFC107;
+            color: #FFC107;
+        }
+
+        .sidebar nav a.active {
+            background: rgba(255, 193, 7, 0.15);
+            border-left-color: #FFC107;
+            color: #FFC107;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            width: 30px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: #FFC107;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 193, 7, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #B0B0B0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            margin: 2rem auto;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-image img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+
+        .intro-text {
+            max-width: 900px;
+            margin: 2rem auto;
+            text-align: left;
+            padding: 2rem;
+            background: rgba(255, 193, 7, 0.05);
+            border-left: 4px solid #FFC107;
+            border-radius: 10px;
+            line-height: 1.8;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: #FFC107;
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 1rem 0.5rem;
+            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #FFD54F;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 193, 7, 0.6);
+        }
+
+        /* Dashboard */
+        .dashboard-container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            color: #FFC107;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-frame {
+            width: 1700px;
+            max-width: 100%;
+            height: 1000px;
+            background: #000;
+            border: 3px solid #FFC107;
+            border-radius: 15px;
+            margin: 0 auto 1rem auto;
+        }
+
+        .dashboard-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .dashboard-caption {
+            text-align: center;
+            color: #B0B0B0;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        /* Insights */
+        .insights-section {
+            margin: 3rem 0;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            color: #FFC107;
+            margin: 3rem 0 2rem 0;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #FFC107;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .insight-card {
+            background: rgba(255, 193, 7, 0.05);
+            border-left: 4px solid #FFC107;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            background: rgba(255, 193, 7, 0.1);
+            transform: translateX(10px);
+        }
+
+        .insight-card h3 {
+            color: #FFC107;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-card p {
+            line-height: 1.8;
+            color: #E0E0E0;
+        }
+
+        /* Profile */
+        .profile-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.2);
+        }
+
+        .profile-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            margin: 0 auto 2rem auto;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
+            border: 5px solid #FFC107;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-name {
+            font-size: 2.5rem;
+            color: #FFC107;
+            margin-bottom: 1rem;
+        }
+
+        .profile-bio {
+            color: #E0E0E0;
+            line-height: 1.8;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .profile-links {
+            margin: 2rem 0;
+        }
+
+        .social-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: #FFC107;
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: #FFD54F;
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #000;
+            color: #B0B0B0;
+            margin-top: 4rem;
+            border-top: 2px solid #FFC107;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo {
+                font-size: 1rem;
+                padding: 1rem 0.5rem;
+            }
+
+            .sidebar nav a {
+                padding: 1rem;
+                justify-content: center;
+            }
+
+            .sidebar nav a span:last-child {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .dashboard-frame {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <a href="#home" class="logo" onclick="showPage('home')">
+            UBER ANALYSIS
+        </a>
+        <nav>
+            <ul>
+                <li>
+                    <a href="#home" onclick="showPage('home')" class="active" id="nav-home">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#dashboard" onclick="showPage('dashboard')" id="nav-dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#insights" onclick="showPage('insights')" id="nav-insights">
+                        <span class="nav-icon">💡</span>
+                        <span>Insights</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile" onclick="showPage('profile')" id="nav-profile">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="container">
+                <div class="hero">
+                    <h1>Uber Data Analysis Dashboard</h1>
+                    <p class="hero-subtitle">Turning Uber's ride data into actionable insights with Power BI</p>
+                    
+                    <!-- TODO: Replace with your own image - Change the src URL below -->
+                    <div class="hero-image">
+                        <img src="images\car.png" alt="Uber Ride">
+                    </div>
+                    
+                    <div class="intro-text">
+                        <p>The Uber Analysis Dashboard provides a comprehensive overview of Uber's ride data, offering valuable insights into trip patterns, revenue trends, driver performance, and customer demand. It helps identify peak hours, popular routes, and operational efficiencies, enabling data-driven decisions that enhance user experience and business growth. This dashboard transforms raw data into meaningful visual stories — showcasing how Uber connects people, places, and opportunities through every ride.</p>
+                    </div>
+                    
+                    <button class="btn" onclick="showPage('dashboard')">View Dashboard</button>
+                </div>
+            </div>
+            <footer>
+                <p>© 2025 Pranav Raskar | Data Analyst</p>
+            </footer>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page">
+            <div class="container">
+                <div class="dashboard-container">
+                    <h1 class="dashboard-title">Power BI Dashboard</h1>
+                    <div class="dashboard-frame">
+                        <iframe src="https://app.powerbi.com/reportEmbed?reportId=abbbbd23-5af2-463a-adef-30be5ff4ef9d&autoAuth=true&ctid=ab0d6933-c2be-4144-ab83-542b2fd6e21e" frameborder="0" allowFullScreen="true"></iframe>
+                    </div>
+                    <p class="dashboard-caption">This interactive dashboard visualizes Uber's ride data to reveal patterns and performance insights.</p>
+                </div>
+            </div>
+            <footer>
+                <p>© 2025 Pranav Raskar | Data Analyst</p>
+            </footer>
+        </div>
+
+        <!-- Insights Page -->
+        <div id="insights" class="page">
+            <div class="container">
+                <h1 style="text-align: center; color: #FFC107; font-size: 3rem; margin: 2rem 0;">Insights & Analysis</h1>
+                
+                <div class="insights-section">
+                    <h2 class="section-header">🧭 Overview Insights</h2>
+                    
+                    <div class="insight-card">
+                        <h3>1. Overall Trip and Booking Overview</h3>
+                        <p>Uber recorded <strong>103.7K bookings worth $1.6M</strong>, with an average fare of <strong>$15</strong>. Trips averaged <strong>3 miles and 16 minutes</strong>, showing Uber's focus on <strong>short urban rides</strong>.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>2. Total Booking by Payment Type</h3>
+                        <p><strong>Uber Pay</strong> leads with <strong>67%</strong> of bookings, followed by <strong>Cash (32%)</strong>. Digital payment use dominates, though a small cash segment still exists in some regions.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>3. Total Booking by Trip Type (Day vs. Night)</h3>
+                        <p><strong>Day trips = 70%</strong>, <strong>Night trips = 30%</strong>. Uber mainly serves daytime commuters, with steady but lower night demand.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>4. Total Booking Amount by Payment Type</h3>
+                        <p><strong>Uber Pay generates $1.1M (71%)</strong>, <strong>Cash $443K (29%)</strong>. Digital users ride more and spend more per trip.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>5. Total Booking Amount by Trip Type</h3>
+                        <p><strong>Day trips = $1.06M (69%)</strong>, <strong>Night = $490K (31%)</strong>. Peak activity occurs during the day due to work-related travel.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>6. Total Trip Distance by Payment Type</h3>
+                        <p><strong>Uber Pay covers 231K miles (66%)</strong>, <strong>Cash 115K miles (33%)</strong>. Digital users tend to travel longer distances.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>7. Total Trip Distance by Trip Type</h3>
+                        <p><strong>Day = 230K miles (66%)</strong>, <strong>Night = 119K miles (34%)</strong>. Confirms Uber's daytime dominance in both bookings and distance.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>8. Conclusion</h3>
+                        <p>Uber's operations are <strong>daytime-focused</strong>, <strong>digitally driven</strong>, and <strong>optimized for short city rides</strong>. Uber Pay powers most revenue and distance, while cash users remain a target for digital growth. Expanding night rides and eco-options like <strong>Uber Green</strong> could boost future performance.</p>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2 class="section-header">⏰ Time Analysis Insights</h2>
+                    
+                    <div class="insight-card">
+                        <h3>1. Trip Trend by Hour of Day</h3>
+                        <p>Peak rides occur between <strong>8 AM – 10 AM</strong> and <strong>5 PM – 8 PM</strong>, aligning with office commutes.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>2. Booking Trend by Weekday</h3>
+                        <p><strong>Friday and Saturday</strong> show the highest bookings; <strong>Monday and Tuesday</strong> are the lowest.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>3. Revenue by Hour</h3>
+                        <p>Highest fare revenue occurs between <strong>6 PM – 9 PM</strong> when long-distance rides are more common.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>4. Average Trip Duration by Hour</h3>
+                        <p>Longer trips happen during <strong>off-peak hours (10 PM – 6 AM)</strong> due to lighter traffic.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>5. Average Distance by Time Period</h3>
+                        <p>Daytime trips average <strong>3 miles</strong>, night trips average <strong>4 miles</strong>, showing longer leisure rides at night.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>6. Hourly Utilization Summary</h3>
+                        <p>Ride demand rises after <strong>6 AM</strong>, peaks around <strong>8–9 AM</strong>, and dips after <strong>10 PM</strong>.</p>
+                    </div>
+
+                    <div class="insight-card">
+                        <h3>7. Conclusion</h3>
+                        <p>Uber's <strong>time-based demand</strong> aligns with <strong>office and leisure patterns</strong>. Increasing driver availability during peaks and night incentives can enhance utilization.</p>
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <p>© 2025 Pranav Raskar | Data Analyst</p>
+            </footer>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profile" class="page">
+            <div class="container">
+                <div class="profile-container">
+                    <div class="profile-image">
+                        <img src="images\profile.jpg" alt="Pranav Raskar">
+                    </div>
+                    <h1 class="profile-name">Pranav Raskar</h1>
+                    <p style="color: #FFC107; font-size: 1.2rem; margin-bottom: 2rem;">Data Analyst</p>
+                    
+                    <div class="profile-bio">
+                        <p>I'm a final-year Computer Engineering student with a passion for Data Analytics and Business Intelligence. Skilled in Power BI, SQL, Python, and Excel, I specialize in transforming data into actionable insights that drive smarter business decisions.</p>
+                    </div>
+                    
+                    <div class="profile-links">
+                        <a href="https://www.linkedin.com/in/pranav-raskar-60337525a" target="_blank" class="social-btn">🔗 LinkedIn</a>
+                        <a href="https://github.com/PranavRaskar" target="_blank" class="social-btn">💻 GitHub</a>
+                        <a href="mailto:pranavraskar02@gmail.com" class="social-btn">📧 Email</a>
+                    </div>
+                </div>
+            </div>
+            <footer>
+                <p>© 2025 Pranav Raskar | Data Analyst</p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Designed by Pranav Raskar | Data Analyst Portfolio</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Remove active class from all nav links
+            const navLinks = document.querySelectorAll('.sidebar nav a');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to selected nav link
+            document.getElementById('nav-' + pageId).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
