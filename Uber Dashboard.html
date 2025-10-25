@@ -339,44 +339,172 @@
             border-top: 2px solid #FFC107;
         }
 
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #FFC107;
+            color: #000;
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        }
+
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .sidebar {
-                width: 70px;
-            }
-
-            .logo {
-                font-size: 1rem;
-                padding: 1rem 0.5rem;
-            }
-
-            .sidebar nav a {
-                padding: 1rem;
-                justify-content: center;
-            }
-
-            .sidebar nav a span:last-child {
-                display: none;
+                width: 250px;
             }
 
             .main-content {
-                margin-left: 70px;
-                width: calc(100% - 70px);
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+
+            .dashboard-frame {
+                width: 100%;
+                height: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                width: 250px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding-top: 4rem;
+            }
+
+            .page {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
             }
 
             .hero h1 {
                 font-size: 2rem;
             }
 
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-image {
+                height: 300px;
+            }
+
+            .intro-text {
+                padding: 1.5rem;
+                font-size: 0.95rem;
+            }
+
             .dashboard-frame {
                 height: 600px;
+            }
+
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .section-header {
+                font-size: 1.5rem;
+            }
+
+            .insight-card {
+                padding: 1.5rem;
+            }
+
+            .insight-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .profile-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .profile-image {
+                width: 180px;
+                height: 180px;
+            }
+
+            .profile-name {
+                font-size: 2rem;
+            }
+
+            .social-btn {
+                display: block;
+                margin: 0.5rem 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .hero-image {
+                height: 250px;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .dashboard-frame {
+                height: 500px;
+            }
+
+            .section-header {
+                font-size: 1.3rem;
+            }
+
+            .insight-card h3 {
+                font-size: 1.1rem;
+            }
+
+            .profile-image {
+                width: 150px;
+                height: 150px;
+            }
+
+            .profile-name {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
     <!-- Sidebar Navigation -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <a href="#home" class="logo" onclick="showPage('home')">
             UBER ANALYSIS
         </a>
@@ -421,7 +549,7 @@
                     
                     <!-- TODO: Replace with your own image - Change the src URL below -->
                     <div class="hero-image">
-                        <img src="images\car.png" alt="Uber Ride">
+                        <img src="images\uber.jpg" alt="Uber Ride">
                     </div>
                     
                     <div class="intro-text">
@@ -549,6 +677,7 @@
         <div id="profile" class="page">
             <div class="container">
                 <div class="profile-container">
+                    <!-- TODO: Replace with your own profile image - Change the src URL below -->
                     <div class="profile-image">
                         <img src="images\profile.jpg" alt="Pranav Raskar">
                     </div>
@@ -591,7 +720,29 @@
             
             // Scroll to top
             window.scrollTo(0, 0);
+
+            // Close mobile menu on page change
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
         }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
     </script>
 </body>
 </html>
